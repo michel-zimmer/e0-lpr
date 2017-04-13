@@ -42,8 +42,13 @@ SIZE=''
 PS3='Select paper size: '
 select OPT in 'DIN A4' 'DIN A3'; do 
   case "${REPLY}" in
-    1|2 )
-      SIZE="${OPT}"
+    1 )
+      SIZE="A4"
+      break
+      ;;
+
+    2 )
+      SIZE='A3'
       break
       ;;
 
@@ -56,7 +61,7 @@ done
 
 DUPLEX=''
 PS3='Select duplex options: '
-select OPT in 'one-sided' 'two-sided long edge' 'two-sided short edge'; do 
+select OPT in 'one-sided' 'two-sided-long-edge' 'two-sided-short-edge'; do 
   case "${REPLY}" in
     1|2|3 )
       DUPLEX="${OPT}"
