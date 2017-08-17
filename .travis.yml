@@ -1,0 +1,11 @@
+sudo: enabled
+dist: trusty
+language: bash
+
+before_install:
+  - sudo apt-get install -qq shellcheck
+  - sudo pip install bashate
+
+script:
+  - shellcheck e0-lpr.sh
+  - bashate e0-lpr.sh
