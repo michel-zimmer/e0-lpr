@@ -6,8 +6,6 @@
 #
 #  This script asks for printing options, copies the file over SSH, prints it and deletes it afterwards.
 
-HOST='x01.informatik.uni-bremen.de'
-
 if [ "${#}" -ne 1 ]; then
     echo "Usage: ${0} filename"
     exit 0
@@ -20,6 +18,11 @@ if [ ! -f "${FILENAME}" ]; then
     exit 0
 fi
 
+if [ -z "${HOST+x}" ]; then
+    HOST='x01.informatik.uni-bremen.de'
+fi
+
+ssh "${HOST}" -- 'echo "Printing from $( hostname -f )"'
 ssh "${HOST}" -- pacc
 
 STANDARD_PARAMETERS=false
