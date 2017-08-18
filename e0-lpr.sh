@@ -25,35 +25,24 @@ fi
 ssh "${HOST}" -- 'echo "Printing from $( hostname -f )"'
 ssh "${HOST}" -- pacc
 
-STANDARD_PARAMETERS=false
-PRINTER=''
-SIZE=''
-DUPLEX=''
-COPIES=0
+STANDARD_PARAMETERS=true
+PRINTER='lw0'
+SIZE='A4'
+DUPLEX='two-sided-long-edge'
+COPIES=1
 
-PS3='Use standard parameters (lw0, DIN A4, two-sided-long-edge, 1 copy)? '
-select OPT in 'Yes' 'No'; do
-    case "${REPLY}" in
-        1 )
-            PRINTER='lw0'
-            SIZE='A4'
-            DUPLEX='two-sided-long-edge'
-            COPIES=1
-            STANDARD_PARAMETERS=true
-            break
-            ;;
-
-        2 )
-            STANDARD_PARAMETERS=false
-            break
-            ;;
-
-        *)
-            echo 'Please answer with "1" or "2".'
-            continue
-            ;;
-    esac
-done
+echo "Print using standard parameters (lw0, DIN A4, two-sided-long-edge, 1 cop\
+y)? [Y/n]"
+read -r STANDARD_PARAMETERS
+case "${STANDARD_PARAMETERS}" in
+    [yY])
+        ;;
+    '')
+        ;;
+    *)
+        STANDARD_PARAMETERS=false
+        ;;
+esac
 
 if [[ "${STANDARD_PARAMETERS}" = false ]]; then
     PS3='Select printer: '
@@ -101,6 +90,7 @@ if [[ "${STANDARD_PARAMETERS}" = false ]]; then
         esac
     done
 
+    COPIES=0
     while [ ! "${COPIES}" -gt 0 ]; do
         printf 'Number of copies: '
         read -r COPIES
@@ -113,18 +103,20 @@ fi
 TMP="$( ssh ${HOST} -- mktemp --tmpdir=\"$\( pwd \)\" e0-lpr.sh.tmp.XXXXX )"
 PARAMETERS="-P ${PRINTER} -# ${COPIES} -o sides=${DUPLEX} -o media=${SIZE}"
 
-echo 'Print using the following parameters? [Y/n]'
-echo "${PARAMETERS}"
-read -r CONTINUE
-case "${CONTINUE}" in
-    [yY])
-        ;;
-    '')
-        ;;
-    *)
-        exit 0
-        ;;
-esac
+if [[ "${STANDARD_PARAMETERS}" = false ]]; then
+    echo 'Print using the following parameters? [Y/n]'
+    echo "${PARAMETERS}"
+    read -r CONTINUE
+    case "${CONTINUE}" in
+        [yY])
+            ;;
+        '')
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+fi
 
 scp "${FILENAME}" "${HOST}:${TMP}"
 # shellcheck disable=SC2029
