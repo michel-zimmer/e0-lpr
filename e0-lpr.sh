@@ -61,7 +61,7 @@ if [[ "${STANDARD_PARAMETERS}" = false ]]; then
     done
 
     PS3='Select paper size: '
-    select OPT in 'DIN A4' 'DIN A3'; do
+    select OPT in 'A4' 'A3'; do
         case "${REPLY}" in
             1|2 )
                 SIZE="${OPT}"
